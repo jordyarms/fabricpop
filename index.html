@@ -1,94 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FABRIC POP - REAL CRITICS REAL REVIEWS</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FabricPop — Polkadot Wallet Connect</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #fff; color: #000; }
-        h1 { text-align: center; }
-        button { padding: 5px 10px; background: #eee; border: 1px solid #ccc; cursor: pointer; }
-        input, textarea { width: 100%; max-width: 400px; padding: 5px; border: 1px solid #ccc; }
-        form { margin: 20px 0; }
-        .review { border-bottom: 1px solid #ccc; padding: 10px 0; }
-        p { margin: 5px 0; }
+      body {
+        font-family: system-ui, sans-serif;
+        background: #f9fafb;
+        color: #111827;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+      button {
+        background-color: #4f46e5;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      button:hover {
+        background-color: #4338ca;
+      }
+      .msg {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        word-break: break-all;
+      }
     </style>
-</head>
-<body>
-    <h1>FABRIC POP - REAL REVIEWS, REAL CRITICS</h1>
-    <button id="connectButton">Connect Wallet</button>
-    <p id="accountInfo"></p>
-    <form id="reviewForm" style="display: none;">
-        <label for="movieTitle">Movie Title:</label><br>
-        <input type="text" id="movieTitle" required><br><br>
-        <label for="reviewText">Review:</label><br>
-        <textarea id="reviewText" required rows="4"></textarea><br><br>
-        <button type="submit">Submit Review</button>
-    </form>
-    <div id="reviewsList"></div>
+  </head>
+
+  <body>
+    <h1>FabricPop — Connect Polkadot Wallet</h1>
+
+    <button id="connectBtn">Connect Wallet</button>
+
+    <div id="message" class="msg"></div>
 
     <script type="module">
-        import { web3Enable, web3Accounts, web3FromAddress } from 'https://unpkg.com/@polkadot/extension-dapp@latest';
-        import { stringToHex } from 'https://unpkg.com/@polkadot/util@latest';
+      import {
+        web3Enable,
+        web3Accounts,
+        web3FromAddress,
+      } from "https://esm.sh/@polkadot/extension-dapp";
 
-        const connectButton = document.getElementById('connectButton');
-        const accountInfo = document.getElementById('accountInfo');
-        const reviewForm = document.getElementById('reviewForm');
-        const reviewsList = document.getElementById('reviewsList');
-        let selectedAddress = null;
-        let signer = null;
+      const connectBtn = document.getElementById("connectBtn");
+      const msg = document.getElementById("message");
 
-        connectButton.addEventListener('click', async () => {
-            try {
-                const extensions = await web3Enable('Simple Movie Reviews');
-                if (extensions.length === 0) {
-                    alert('No Polkadot extension found. Install from polkadot.js.org/extension.');
-                    return;
-                }
-                const allAccounts = await web3Accounts();
-                if (allAccounts.length === 0) {
-                    alert('No accounts found in extension. Create one first.');
-                    return;
-                }
-                selectedAddress = allAccounts[0].address; // Use the first account
-                accountInfo.textContent = `Connected: ${selectedAddress}`;
-                const injector = await web3FromAddress(selectedAddress);
-                signer = injector.signer;
-                reviewForm.style.display = 'block';
-                connectButton.style.display = 'none';
-            } catch (error) {
-                alert('Error connecting: ' + error.message);
-            }
-        });
+      connectBtn.addEventListener("click", async () => {
+        msg.textContent = "Connecting...";
 
-        reviewForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const movieTitle = document.getElementById('movieTitle').value.trim();
-            const reviewText = document.getElementById('reviewText').value.trim();
-            if (!movieTitle || !reviewText) return;
+        try {
+          // Ask for permission to use wallet extensions
+          const extensions = await web3Enable("FabricPop");
+          if (extensions.length === 0) {
+            msg.innerHTML =
+              "❌ No Polkadot wallet extension found.<br>Please install <a href='https://talisman.xyz' target='_blank'>Talisman</a> or <a href='https://polkadot.js.org/extension/' target='_blank'>Polkadot.js</a>.";
+            return;
+          }
 
-            const message = `Movie: ${movieTitle}\nReview: ${reviewText}`;
-            try {
-                const { signature } = await signer.signRaw({
-                    type: 'bytes',
-                    data: stringToHex(message),
-                    address: selectedAddress
-                });
-                const reviewDiv = document.createElement('div');
-                reviewDiv.classList.add('review');
-                reviewDiv.innerHTML = `
-                    <strong>${movieTitle}</strong><br>
-                    ${reviewText}<br>
-                    By: ${selectedAddress}<br>
-                    (Signed: ${signature.substring(0, 10)}...${signature.slice(-10)})
-                `;
-                reviewsList.prepend(reviewDiv); // Add to top
-                document.getElementById('movieTitle').value = '';
-                document.getElementById('reviewText').value = '';
-            } catch (error) {
-                alert('Error signing/submitting: ' + error.message);
-            }
-        });
+          // Get accounts
+          const accounts = await web3Accounts();
+          if (accounts.length === 0) {
+            msg.textContent = "No accounts found in wallet.";
+            return;
+          }
+
+          const account = accounts[0];
+          msg.textContent = `✅ Connected: ${account.address}`;
+
+          // Optional: get signer for transactions
+          const injector = await web3FromAddress(account.address);
+          console.log("Connected account:", account);
+          console.log("Signer injector:", injector);
+        } catch (err) {
+          console.error("Connection error:", err);
+          msg.textContent = "⚠️ Failed to connect wallet. Check console for details.";
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
