@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FabricPop — IGDB Integration Demo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Poppins', system-ui, sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin: 0 0 10px 0;
+      color: #00ff88;
+    }
+
+    .subtitle {
+      color: #999;
+      font-size: 1rem;
+    }
+
+    .demo-container {
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .search-section {
+      background-color: #1a1a1a;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      border: 2px solid #00ff88;
+    }
+
+    .search-section h2 {
+      margin-top: 0;
+      color: #00ff88;
+    }
+
+    .search-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 2px solid #00ff88;
+      border-radius: 8px;
+      background-color: #0a0a0a;
+      color: #fff;
+      font-size: 1rem;
+      font-family: 'Poppins', system-ui, sans-serif;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #00ffcc;
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+    }
+
+    button {
+      background-color: #00ff88;
+      color: #000;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      font-family: 'Poppins', system-ui, sans-serif;
+    }
+
+    button:hover {
+      background-color: #00ffcc;
+      transform: translateY(-2px);
+    }
+
+    button:disabled {
+      background-color: #666;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .results-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .game-card {
+      background-color: #1a1a1a;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .game-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+      border-color: #00ff88;
+    }
+
+    .game-cover {
+      width: 100%;
+      aspect-ratio: 264/374;
+      object-fit: cover;
+      background-color: #333;
+    }
+
+    .game-info {
+      padding: 15px;
+      text-align: left;
+    }
+
+    .game-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      color: #fff;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 2.4em;
+    }
+
+    .game-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #00ff88;
+      margin-bottom: 8px;
+    }
+
+    .game-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+    }
+
+    .game-year {
+      color: #999;
+    }
+
+    .game-platforms {
+      font-size: 0.75rem;
+      color: #999;
+      margin-top: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .loading {
+      color: #00ff88;
+      font-size: 1.1rem;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .error {
+      color: #ff4444;
+      padding: 15px;
+      background-color: rgba(255, 68, 68, 0.1);
+      border-radius: 8px;
+      margin: 20px 0;
+      border: 2px solid #ff4444;
+    }
+
+    .no-results {
+      color: #999;
+      font-size: 1.1rem;
+      margin: 40px 0;
+      text-align: center;
+    }
+
+    .section-title {
+      color: #00ff88;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+    }
+
+    .info-box {
+      background-color: rgba(0, 191, 255, 0.1);
+      border: 2px solid #00bfff;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      color: #00bfff;
+    }
+
+    .info-box h3 {
+      margin-top: 0;
+      color: #00bfff;
+    }
+
+    .info-box code {
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #fff;
+    }
+
+    .auth-status {
+      background-color: rgba(0, 255, 136, 0.1);
+      border: 2px solid #00ff88;
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+
+    .auth-status.error {
+      background-color: rgba(255, 68, 68, 0.1);
+      border-color: #ff4444;
+      color: #ff4444;
+    }
+
+    .auth-status .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #00ff88;
+      animation: pulse 2s infinite;
+    }
+
+    .auth-status.error .status-dot {
+      background-color: #ff4444;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>FabricPop — IGDB Integration Demo</h1>
+    <p class="subtitle">Game Database & Review Integration</p>
+  </header>
+
+  <div class="demo-container">
+    <div class="info-box">
+      <h3>About This Demo</h3>
+      <p>This is a standalone demonstration of IGDB (Internet Game Database) API integration for FabricPop.</p>
+      <p>The demo uses Twitch OAuth credentials from your <code>.env</code> file and showcases:</p>
+      <ul>
+        <li>Game search functionality</li>
+        <li>Popular and top-rated games</li>
+        <li>Rich media display with covers and metadata</li>
+        <li>Automatic OAuth token management</li>
+      </ul>
+    </div>
+
+    <div id="authStatus" class="auth-status">
+      <div class="status-dot"></div>
+      <span>Initializing authentication...</span>
+    </div>
+
+    <div class="search-section">
+      <h2>Search Games</h2>
+      <div class="search-container">
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Search for games..."
+          autocomplete="off"
+        />
+        <button id="searchBtn">Search</button>
+      </div>
+
+      <div class="controls">
+        <button id="popularBtn">Load Popular Games</button>
+        <button id="topRatedBtn">Load Top Rated</button>
+        <button id="clearBtn">Clear Results</button>
+      </div>
+    </div>
+
+    <div id="statusMessage"></div>
+    <div id="resultsSection"></div>
+  </div>
+
+  <script type="module">
+    // Import the IGDB service (proxy version)
+    import IGDBService from './igdb-service-proxy.js';
+
+    // Initialize IGDB service with proxy URL
+    // The proxy handles OAuth authentication and CORS
+    const igdb = new IGDBService('http://localhost:3000/api/igdb');
+
+    // DOM elements
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const popularBtn = document.getElementById('popularBtn');
+    const topRatedBtn = document.getElementById('topRatedBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const statusMessage = document.getElementById('statusMessage');
+    const resultsSection = document.getElementById('resultsSection');
+    const authStatus = document.getElementById('authStatus');
+
+    // Initialize auth on load
+    function initAuth() {
+      authStatus.innerHTML = `
+        <div class="status-dot"></div>
+        <span>✅ Ready - Using IGDB API via proxy server (port 3000)</span>
+      `;
+      console.log('IGDB service initialized with proxy at http://localhost:3000');
+    }
+
+    // Show status message
+    function showStatus(message, type = 'info') {
+      const className = type === 'error' ? 'error' : type === 'loading' ? 'loading' : 'info-box';
+      statusMessage.innerHTML = `<div class="${className}">${message}</div>`;
+    }
+
+    // Clear status message
+    function clearStatus() {
+      statusMessage.innerHTML = '';
+    }
+
+    // Create game card HTML
+    function createGameCard(game) {
+      const formatted = igdb.formatGame(game);
+      const ratingDisplay = formatted.rating
+        ? `⭐ ${formatted.rating}%`
+        : 'No rating';
+
+      return `
+        <div class="game-card" data-id="${formatted.id}">
+          <img
+            src="${formatted.coverUrl}"
+            alt="${formatted.name}"
+            class="game-cover"
+            loading="lazy"
+          />
+          <div class="game-info">
+            <h3 class="game-title">${formatted.name}</h3>
+            <div class="game-meta">
+              <div class="game-rating">${ratingDisplay}</div>
+              <div class="game-year">${formatted.releaseYear}</div>
+            </div>
+            <div class="game-platforms">${formatted.platforms}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Display results
+    function displayResults(results, title) {
+      if (!results || results.length === 0) {
+        resultsSection.innerHTML = `
+          <div class="no-results">No results found. Try a different search!</div>
+        `;
+        return;
+      }
+
+      const cardsHTML = results.map(game => createGameCard(game)).join('');
+      resultsSection.innerHTML = `
+        <h2 class="section-title">${title}</h2>
+        <div class="results-container">
+          ${cardsHTML}
+        </div>
+      `;
+
+      // Add click handlers to cards
+      document.querySelectorAll('.game-card').forEach(card => {
+        card.addEventListener('click', async () => {
+          const id = card.dataset.id;
+          await showDetails(id);
+        });
+      });
+    }
+
+    // Show detailed information
+    async function showDetails(id) {
+      try {
+        showStatus('Loading game details...', 'loading');
+        const details = await igdb.getGameDetails(parseInt(id));
+
+        console.log('Game details:', details);
+        clearStatus();
+
+        const formatted = igdb.formatGame(details);
+        alert(`${formatted.name}\n\nRelease: ${formatted.releaseDate || 'TBA'}\nPlatforms: ${formatted.platforms}\nGenres: ${formatted.genres}\n\n${formatted.summary}\n\n(Check console for full details)`);
+      } catch (error) {
+        showStatus(`Error loading details: ${error.message}`, 'error');
+      }
+    }
+
+    // Search handler
+    async function performSearch() {
+      const query = searchInput.value.trim();
+      if (!query) {
+        showStatus('Please enter a search term', 'error');
+        return;
+      }
+
+      try {
+        clearStatus();
+        showStatus('Searching games...', 'loading');
+        searchBtn.disabled = true;
+
+        const results = await igdb.searchGames(query, 12);
+        clearStatus();
+        displayResults(results, `Search Results for "${query}"`);
+      } catch (error) {
+        showStatus(`Search error: ${error.message}`, 'error');
+        console.error('Search error:', error);
+      } finally {
+        searchBtn.disabled = false;
+      }
+    }
+
+    // Load popular games
+    async function loadPopular() {
+      try {
+        clearStatus();
+        showStatus('Loading popular games...', 'loading');
+        popularBtn.disabled = true;
+
+        const results = await igdb.getPopularGames(20);
+        clearStatus();
+        displayResults(results, 'Popular Games');
+      } catch (error) {
+        showStatus(`Error loading popular games: ${error.message}`, 'error');
+        console.error('Popular games error:', error);
+      } finally {
+        popularBtn.disabled = false;
+      }
+    }
+
+    // Load top rated games
+    async function loadTopRated() {
+      try {
+        clearStatus();
+        showStatus('Loading top rated games...', 'loading');
+        topRatedBtn.disabled = true;
+
+        const results = await igdb.getTopRatedGames(20);
+        clearStatus();
+        displayResults(results, 'Top Rated Games');
+      } catch (error) {
+        showStatus(`Error loading top rated games: ${error.message}`, 'error');
+        console.error('Top rated games error:', error);
+      } finally {
+        topRatedBtn.disabled = false;
+      }
+    }
+
+    // Clear results
+    function clearResults() {
+      resultsSection.innerHTML = '';
+      clearStatus();
+      searchInput.value = '';
+    }
+
+    // Event listeners
+    searchBtn.addEventListener('click', performSearch);
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+    popularBtn.addEventListener('click', loadPopular);
+    topRatedBtn.addEventListener('click', loadTopRated);
+    clearBtn.addEventListener('click', clearResults);
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('IGDB Demo loaded. Initializing...');
+      initAuth();
+      // Auto-load popular games
+      loadPopular();
+    });
+  </script>
+</body>
+</html>
