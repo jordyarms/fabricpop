@@ -3,7 +3,7 @@
     web3Enable,
     web3Accounts,
     web3FromAddress,
-  } from "https://esm.sh/@polkadot/extension-dapp";
+  } from "https://cdn.jsdelivr.net/npm/@polkadot/extension-dapp@0.46.8/+esm";
 
   const connectBtn = document.getElementById("connectBtn");
   const msg = document.getElementById("message");
@@ -15,7 +15,7 @@
     console.log("🔗 Starting wallet connection...");
 
     try {
-      // Request permission to connect to wallet extensions
+      // Ask for permission to connect to wallet extensions
       const extensions = await web3Enable("FabricPop");
       console.log("Extensions found:", extensions);
 
@@ -28,7 +28,7 @@
         return;
       }
 
-      // Get available accounts from the wallet
+      // Get available accounts
       const accounts = await web3Accounts();
       console.log("Accounts found:", accounts);
 
@@ -41,11 +41,11 @@
       msg.textContent = `✅ Connected: ${account.address}`;
       console.log("Connected to:", account.address);
 
-      // Get the signer for transactions
+      // Optional: get signer
       const injector = await web3FromAddress(account.address);
       console.log("Signer injector:", injector);
 
-      // Show welcome screen after small delay
+      // Show welcome screen
       setTimeout(() => {
         connectScreen.style.display = "none";
         welcome.style.display = "block";
