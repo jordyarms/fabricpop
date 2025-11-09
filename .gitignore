@@ -1,0 +1,41 @@
+# Environment variables
+.env
+
+# Examples and demos (not for production builds)
+# Note: These are kept in source control for reference but excluded from builds
+# examples/
+
+# Node modules (if using Node.js in future)
+node_modules/
+
+# Python virtual environment (if using Python server)
+venv/
+env/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+
+# Temporary files
+*.tmp
+.cache/
