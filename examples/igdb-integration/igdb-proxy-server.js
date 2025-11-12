@@ -13,9 +13,9 @@
  * Then update igdb-demo.html to use http://localhost:3000/api/igdb
  */
 
-const http = require('http');
-const https = require('https');
-const url = require('url');
+import http from 'http';
+import https from 'https';
+import url from 'url';
 
 // Load credentials from environment or hardcode for demo
 const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID || '2rvgifatr2fniucmxwnmxgxhot8h6u';

@@ -5,8 +5,9 @@
 # Note: These are kept in source control for reference but excluded from builds
 # examples/
 
-# Node modules (if using Node.js in future)
+# Node modules
 node_modules/
+package-lock.json
 
 # Python virtual environment (if using Python server)
 venv/

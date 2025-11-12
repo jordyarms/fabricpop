@@ -67,6 +67,36 @@ python3 -m http.server 8000
 
 ---
 
+### [review-workflow/](review-workflow/)
+**Complete Review Authoring Workflow for Movies, TV Shows, and Games.**
+
+**Includes:**
+- `review-service.js` - Review creation and rating normalization
+- `review-demo.html` - Interactive 5-step workflow
+- `README.md` - Complete workflow documentation
+
+**Features:**
+- Multi-media support (movies, TV shows, games)
+- Flexible rating systems (5-star, 10-point, letter grades, etc.)
+- Rating normalization to 0.0-1.0
+- Review URL validation
+- Blockchain-ready data formatting
+
+**Use Case:** End-to-end review creation workflow integrating TMDB and IGDB with normalized ratings.
+
+**Quick Start:**
+```bash
+# Terminal 1: HTTP server
+python3 -m http.server 8000
+
+# Terminal 2: IGDB proxy (for game reviews)
+cd examples/igdb-integration && node igdb-proxy-server.js
+
+# Visit http://localhost:8000/examples/review-workflow/review-demo.html
+```
+
+---
+
 ## Using Examples in Development
 
 Examples can be imported and tested during development:

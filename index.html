@@ -1,117 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="/fabricpop-logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FabricPop — REEL Reviews, REAL People.</title>
+  <title>FabricPop — REEL Reviews, REAL People</title>
+
+  <!-- Pico CSS Pink Theme -->
+  <link rel="stylesheet" href="/css/pico.pink.min.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    body {
-      background-color: #000;
-      color: #fff;
-      font-family: 'Poppins', system-ui, sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+    :root {
+      --pico-font-family: 'Poppins', system-ui, sans-serif;
     }
 
-    header {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 40px;
+    .logo {
+      max-width: 120px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 0, 128, 0.3);
     }
 
-    img.logo {
-      width: 220px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin: 0;
-    }
-
-    button {
-      background-color: #ff1493;
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.2s ease;
-    }
-
-    button:hover {
-      background-color: #e0117a;
-    }
-
-    .msg {
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      word-break: break-all;
-      color: #ffb6c1;
+    .gradient-text {
+      background: linear-gradient(90deg, #ff1493, #00ff88, #00bfff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
   </style>
 </head>
-
 <body>
-  <header>
-    <img src="/fabricpop-logo.png" alt="Fabric Pop Logo" class="logo" />
-    <h1>FabricPop — REEL Reviews, REAL People 🎬</h1>
-    <p>The blockchain-verified movie review hub</p>
-  </header>
-
-  <button id="connectBtn">Connect Wallet</button>
-  <div id="message" class="msg"></div>
-
-  <script type="module">
-    import {
-      web3Enable,
-      web3Accounts,
-      web3FromAddress,
-    } from "https://esm.sh/@polkadot/extension-dapp";
-
-    const connectBtn = document.getElementById("connectBtn");
-    const msg = document.getElementById("message");
-
-    connectBtn.addEventListener("click", async () => {
-      msg.textContent = "Connecting...";
-
-      try {
-        const extensions = await web3Enable("FabricPop");
-        if (extensions.length === 0) {
-          msg.innerHTML =
-            "❌ No Polkadot wallet extension found.<br>Please install <a href='https://talisman.xyz' target='_blank'>Talisman</a> or <a href='https://polkadot.js.org/extension/' target='_blank'>Polkadot.js</a>.";
-          return;
-        }
-
-        const accounts = await web3Accounts();
-        if (accounts.length === 0) {
-          msg.textContent = "No accounts found in wallet.";
-          return;
-        }
-
-        const account = accounts[0];
-        msg.textContent = `✅ Connected: ${account.address}`;
-
-        const injector = await web3FromAddress(account.address);
-        console.log("Connected account:", account);
-        console.log("Signer injector:", injector);
-      } catch (err) {
-        console.error("Connection error:", err);
-        msg.textContent = "⚠️ Failed to connect wallet. Check console for details.";
-      }
-    });
-  </script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
-
